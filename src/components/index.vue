@@ -1,6 +1,6 @@
 <template>
     <div>
-    
+    <!-- 导航 -->
         <div class="section">
     
             <div class="location">
@@ -15,8 +15,8 @@
     
         </div>
     
-     
-       <div class="section">
+     <!-- 主要内容 -->
+        <div class="section">
     
             <div class="wrapper">
     
@@ -130,20 +130,20 @@
             </div>
     
         </div>
-    
-        <div class="section">
+    <!-- 商品 -->
+        <div class="section" v-for="item in productInfo" :key="item.level1cateid">
     
             <div class="main-tit">
     
-                <h2>电脑办公</h2>
+                <h2>{{item.catetitle}}</h2>
     
                 <p>
     
-                    <a href="/goods/43.html">电脑整机</a>
+                    <a href="/goods/43.html" v-for="productList in item.level2catelist" :key="productList.subcateid">{{productList.subcatetitle}}</a>
     
-                    <a href="/goods/43.html">外设产品</a>
+                    <!-- <a href="/goods/43.html">外设产品</a>
     
-                    <a href="/goods/43.html">办公打印</a>
+                    <a href="/goods/43.html">办公打印</a> -->
     
                     <a href="/goods/40.html">更多
     
@@ -161,31 +161,32 @@
     
                     <ul class="img-list">
     
-                        <li>
+                        <li v-for="list in item.datas" :key="list.artID">
     
-                            <a href="#/site/goodsinfo/92" class="">
+                            <!-- <a href="#/site/goodsinfo/92" class=""> -->
+                            <router-link :to="'/detail/'+list.artID">
     
                                 <div class="img-box">
     
-                                    <img src="http://39.108.135.214:8899/upload/201504/20/thumb_201504200225107390.jpg">
+                                    <img :src="list.img_url">
     
                                 </div>
     
                                 <div class="info">
     
-                                    <h3>联想（Lenovo） G510AM 15.6英寸笔记本电脑</h3>
+                                    <h3>{{list.artTitle}}</h3>
     
                                     <p class="price">
     
-                                        <b>2999</b>元</p>
+                                        <b>{{list.sell_price}}</b>元</p>
     
                                     <p>
     
-                                        <strong>库存 99</strong>
+                                        <strong>库存 {{list.stock_quantity}}</strong>
     
                                         <span>市场价：
     
-                                                <s>4599</s>
+                                                <s>{{list.market_proce}}</s>
     
                                             </span>
     
@@ -193,11 +194,11 @@
     
                                 </div>
     
-                            </a>
+                            </router-link>
     
                         </li>
     
-                        <li>
+                        <!-- <li>
     
                             <a href="#/site/goodsinfo/93" class="">
     
@@ -339,7 +340,7 @@
     
                             </a>
     
-                        </li>
+                        </li> -->
     
                     </ul>
     
@@ -349,7 +350,7 @@
     
         </div>
     
-        <div class="section">
+        <!-- <div class="section">
     
             <div class="main-tit">
     
@@ -671,67 +672,61 @@
     
             </div>
     
-        </div>
+        </div> -->
     
     </div>
 </template>
 
 <script>
-    import axios from "axios";
-    
-    import moment from "moment";
-    
-    
-    
-    export default {
-    
-        name: "index",
-    
-        data: function() {
-    
-            return {
-    
-                toplist: [], //左边侧栏
-    
-                sliderlist: [], //轮播图
-    
-                catelist: [] //右边菜单栏
-    
-            };
-    
-        },
-    
-        filters: {
-    
-            newTime(value) {
-    
-                return moment(value).format("YYYY年MM月DD日");
-    
-            }
-    
-        },
-    
-        created() {
-    
-            axios
-    
-                .get("http://111.230.232.110:8899/site/goods/gettopdata/goods")
-    
-                .then(rep => {
-    
-                    // alert(this.toplist)
-    
-                    this.toplist = rep.data.message.toplist; //保存左边侧栏数据
-    
-                    this.sliderlist = rep.data.message.sliderlist; //保存轮播图数据
-    
-                    this.catelist = rep.data.message.catelist; //保存右边侧栏数据
-    
-                    // console.log(this.toplist);
-    
-                });
-    
-        }
-    
+import moment from "moment";
+
+export default {
+  name: "index",
+
+  data: function() {
+    return {
+      toplist: [], //左边侧栏
+      sliderlist: [], //轮播图
+      catelist: [], //右边菜单栏
+      productInfo: [] //商品信息
     };
+  },
+  methods:{
+      //获取主要内容部分的数据
+     getMainInfo(){
+           this.$axios.get("http://111.230.232.110:8899/site/goods/gettopdata/goods").then(rep => {
+          
+          this.toplist = rep.data.message.toplist; //保存左边侧栏数据
+          this.sliderlist = rep.data.message.sliderlist; //保存轮播图数据
+          this.catelist = rep.data.message.catelist; //保存右边侧栏数据
+          // 存储商品信息数据
+        //   this.productInfo = data.data.message;
+        })
+     },
+      //获取商品信息数据
+      getProductInfo(){
+           this.$axios.get("http://111.230.232.110:8899/site/goods/getgoodsgroup").then(data => {
+          // 存储商品信息数据
+          this.productInfo = data.data.message;
+        })
+     },
+  },
+  filters: {
+    newTime(value) {
+      return moment(value).format("YYYY年MM月DD日");
+    }
+  },
+
+  created() {
+       //渲染主要内容数据
+        this.getMainInfo();
+        //渲染商品信息数据
+        this.getProductInfo();
+      
+  },
+  
+};
 </script>
+<style>
+
+</style>

@@ -6,7 +6,7 @@
         <div class="head-top">
             <div class="section">
                 <div class="left-box">
-                    <span>黑马买买买</span>
+                    <span>买买买</span>
                     <a target="_blank" href="#"></a>
                     <a target="_blank" href="#"></a>
                 </div>
@@ -18,8 +18,8 @@
                         <strong>|</strong>
                     </span>
                     <span>
-                        <a href="" class="">会员中心</a>
-                        <strong>|</strong>
+                      <router-link to="/vip">会员中心</router-link>
+                                              <strong>|</strong>
                         <a>退出</a>
                         <strong>|</strong>
                     </span>
@@ -43,9 +43,9 @@
                            </router-link>
                         </li>
                         <li class="news">
-                            <a href="#" class="">
+                            <router-link to="/dailybest">
                                 <span class="out" style="top: 0px;">每日精选</span>
-                            </a>
+                            </router-link>
                         </li>
                         <li class="photo">
                             <a href="#" class="">
@@ -54,7 +54,7 @@
                         </li>
                         <li class="video">
                             <a href="#" class="">
-                                <span class="out" style="top: 0px;">黑马超市</span>
+                                <span class="out" style="top: 0px;">买买买超市</span>
                             </a>
                         </li>
                         <li class="down">
@@ -103,7 +103,7 @@
                     </div>
                     <div class="foot-box">
                         <div class="copyright">
-                            <p>版权所有 黑马买买买 </p>
+                            <p>版权所有 买买买 </p>
                             <p>公司地址： 联系电话：</p>
                             <p class="gray">Copyright © 2009-2018 itcast Corporation,All Rights Reserved.</p>
                         </div>
@@ -120,13 +120,42 @@
 </template>
 
 <script>
+import $ from "jquery";
 export default {
-  name: "app"
+  name: "app",
+  mounted() {
+    $("#menu2 li a").wrapInner('<span class="out"></span>');
+    $("#menu2 li a").each(function() {
+      $('<span class="over">' + $(this).text() + "</span>").appendTo(this);
+    });
+
+    $("#menu2 li a").hover(
+      function() {
+        $(".out", this)
+          .stop()
+          .animate({ top: "48px" }, 300); // move down - hide
+        $(".over", this)
+          .stop()
+          .animate({ top: "0px" }, 300); // move down - show
+      },
+      function() {
+        $(".out", this)
+          .stop()
+          .animate({ top: "0px" }, 300); // move up - show
+        $(".over", this)
+          .stop()
+          .animate({ top: "-48px" }, 300); // move up - hide
+      }
+    );
+  }
 };
 </script>
 
 <style>
 @import url("./assets/statics/site/css/style.css");
+.menuhd ul li a span.over {
+    background-color: yellowgreen;
+}
 </style>
 
 
