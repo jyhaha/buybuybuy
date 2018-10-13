@@ -26,7 +26,7 @@
                     <a href="" class="">
                         <i class="iconfont icon-cart"></i>购物车(
                         <span id="shoppingCartCount">
-                            <span>4</span>
+                            <span>{{$store.getters.cartGoodCount}}</span>
                         </span>)</a>
                 </div>
             </div>
@@ -115,7 +115,7 @@
                     </div>
                 </div>
             </div>
-
+         <BackTop style="background:blue;"></BackTop>
   </div>
 </template>
 
