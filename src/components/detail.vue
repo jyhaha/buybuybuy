@@ -63,7 +63,7 @@
                         </div>
                         <div id="goodsTabs" class="goods-tab bg-wrap">
                             <!-- 吸顶效果 -->
-                        <Affix :offset-top="0" @on-change="navFixed" >
+                        <Affix :offset-top="0"  >
                             <div id="tabHead" class="tab-head" style="position: static;  top: 517px; width: 925px;">
                                 <ul>
                                     <li>
@@ -247,10 +247,7 @@ export default {
         //num变会1
         this.num=1;
     },
-    //吸顶的时候改变触发
-    navFixed(val){
-          console.log(val)
-    }
+   
   },
   created() {
     //获取具体商品信fhjskdfhkhfkshjk息

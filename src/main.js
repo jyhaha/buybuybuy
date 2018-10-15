@@ -42,7 +42,7 @@ Vue.use(VueRouter);
 import index from './components/index.vue';
 import detail from './components/detail.vue';
 import vip from './components/vip.vue';
-
+import shopCart from "./components/shopCart.vue";
 
 
 Vue.config.productionTip = false ;
@@ -54,17 +54,25 @@ const routes = [
     path: '/',
     component: index
   },
+  //首页
   {
     path: '/index',
     component: index
   },
+  //会员页
   {
     path:"/vip",
     component:vip
   },
+  // 商品详情页
   {
     path:"/detail/:goodId",
     component:detail
+  },
+  //购物车
+  {
+    path:"/shopCart",
+    component:shopCart
   }
 ]
 
@@ -108,9 +116,14 @@ const store = new Vuex.Store({
     }
   }
 })
-
+/* eslint-disable no-new */
 new Vue({
   render: h => h(App),
   router,
   store
 }).$mount('#app')
+
+//关闭浏览器触发
+window.onbeforeunload =function(){
+      window.localStorage.setItem("cartData",JSON.stringify(store.state.shopCart));
+}
