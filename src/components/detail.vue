@@ -13,7 +13,7 @@
                 <div class="wrap-box">
                     <div class="left-925">
                         <div class="goods-box clearfix">
-                            <div class="pic-box">
+                            <div class="pic-box" v-if="images.normal_size.length!=0">
                                  <ProductZoomer :base-images="images" :base-zoomer-options="zoomerOptions"/>
                             </div>
                             <div class="goods-spec">
@@ -164,40 +164,55 @@ export default {
       pageAll: 6, //总页数
       textContent: "", //提交评论内容
       images: {
-        normal_size: [
-          {
-            id: 1,
-            url:
-              "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1539361155360&di=e4cb1d4cadb88e2bedc74926ede8a9c7&imgtype=jpg&src=http%3A%2F%2Fimg.mp.sohu.com%2Fupload%2F20170522%2F97727408c9b743b9bcec4e4bcc30a293.png"
-          },
-          {
-            id: 2,
-            url:
-              "https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3144814469,4216142532&fm=26&gp=0.jpg"
-          }
-        ]
+        normal_size: []
       },
       zoomerOptions: {
-        zoomFactor: 4,
+        //   放大倍数
+        zoomFactor: 8,
+        // 放大样式
         pane: "container-round",
+        // 多久出来
         hoverDelay: 300,
-        namespace: "inline-zoomer",
+        // 类前缀
+        namespace: "inline-zoomer-hahaha",
+        // 点击移动
         move_by_click: true,
+        // 滚动的图片张数
         scroll_items: 5,
-        choosed_thumb_border_color: "#bbdefb"
-      }
+        // 选中的缩略图边框颜色
+        choosed_thumb_border_color: "#FF327A"
+      },
     };
   },
   methods: {
     getGoodInfo() {
       //获取url传递过来的商品id
       this.goodId = this.$route.params.goodId;
-
+     
       this.$axios.get("/site/goods/getgoodsinfo/" + this.goodId).then(data => {
         this.goodsInfo = data.data.message.goodsinfo;
         this.Recommended = data.data.message.hotgoodslist;
-        this.imgList = data.data.message.imgList;
-        //  console.log(this.goodsInfo);
+        this.imgList = data.data.message.imglist;
+        //  console.log(data.data.message.imglist);
+         //清空图片
+         let arr=[];
+         this.imgList.forEach((v,index)=>{
+             arr.push({
+             id:index+1,
+             url:v.thumb_path
+             });
+         });
+         this.images.normal_size=arr;
+      }).catch(()=>{
+           this.images.normal_size=[{
+            id: 1,
+            url:"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1539361155360&di=e4cb1d4cadb88e2bedc74926ede8a9c7&imgtype=jpg&src=http%3A%2F%2Fimg.mp.sohu.com%2Fupload%2F20170522%2F97727408c9b743b9bcec4e4bcc30a293.png"
+          },
+          {
+            id: 2,
+            url:
+              "https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3144814469,4216142532&fm=26&gp=0.jpg"
+          }]
       });
     },
     //获取评论内容

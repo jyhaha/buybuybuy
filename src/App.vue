@@ -11,16 +11,17 @@
                     <a target="_blank" href="#"></a>
                 </div>
                 <div id="menu" class="right-box">
-                    <span style="display: none;">
-                        <a href="" class="">登录</a>
+                    <span v-show="$store.state.isLogin==false" style="display: none;">
+                        <!-- <a href="" class="">登录</a> -->
+                        <router-link to="/login">登录</router-link>
                         <strong>|</strong>
                         <a href="" class="">注册</a>
                         <strong>|</strong>
                     </span>
-                    <span>
+                    <span v-show="$store.state.isLogin==true">
                       <router-link to="/vip">会员中心</router-link>
                                               <strong>|</strong>
-                        <a>退出</a>
+                        <a @click="loginOut">退出</a>
                         <strong>|</strong>
                     </span>
                      <router-link to="/shopCart">
@@ -148,6 +149,21 @@ export default {
           .animate({ top: "-48px" }, 300); // move up - hide
       }
     );
+  },
+  methods:{
+      //用户登出
+      loginOut(){
+          this.$axios.get("site/account/logout").then(rep=>{
+              console.log(rep.data.status)
+              if(rep.data.status==0){
+                   this.$store.commit("updateLogin",{
+                       isLogin:false
+                   })
+                   //打回登录页
+                   this.$router.push("/login");
+              }
+          })
+      }
   }
 };
 </script>

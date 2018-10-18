@@ -72,7 +72,7 @@
                                 <!-- 显示购物车清单 -->
                                 <tr v-show="$store.state.shopCart.length!=0" v-for="item in shopList" :key="item.id">
                                     <td>
-                                        <el-switch   active-color="#13ce66" inactive-color="#ff4949">
+                                        <el-switch  v-model="item.selected" active-color="#13ce66" inactive-color="#ff4949">
                                         </el-switch>
                                     </td>
                                     <td>
@@ -83,11 +83,11 @@
                                     </td>
                                     <td>{{item.sell_price}}</td>
                                     <td>
-                                        <el-input-number v-model="item.buycount" @change="saveShopCart" :min="1" :step="1"></el-input-number>
+                                        <el-input-number v-model="item.buycount" @change="saveShopCart(item.id,$event)" :min="1" :step="1"></el-input-number>
                                     </td>
                                     <td>{{item.sell_price*item.buycount}}</td>
                                     <td>
-                                        <button type="button"  class="el-button el-button--danger is-circle"><i class="el-icon-delete"></i></button>
+                                        <button type="button" @click="delCart(item.id)" class="el-button el-button--danger is-circle"><i class="el-icon-delete"></i></button>
                                     </td>
                                 </tr>
                                 <tr>
@@ -105,14 +105,17 @@
                     <!--购物车底部-->
                     <div class="cart-foot clearfix">
                         <div class="right-box">
-                            <button class="button" onclick="javascript:location.href='/index.html';">继续购物</button>
-                            <button class="submit" onclick="formSubmit(this, '/', '/shopping.html');">立即结算</button>
+                            <button class="button" o>继续购物</button>
+                            <!-- <router-link to="/checkOrder" > -->
+                            <button class="submit" @click="isLogin">立即结算</button>
+                            <!-- </router-link> -->
                         </div>
                     </div>
                     <!--购物车底部-->
                 </div>
             </div>
         </div>
+        
     </div>
 </template>
 
@@ -142,6 +145,10 @@ export default {
                rep.data.message.forEach((v,index)=>{
                      v.buycount=this.$store.state.shopCart[v.id]
                     // console.log(this.$store.state.shopCart[v.id]);
+                     this.$set(v, "selected", true);
+                    // v.selected = true;
+
+
                })
             //存储购物车数据
                this.shopList=rep.data.message;
@@ -150,13 +157,54 @@ export default {
          })
       },
       //同步数据到仓库
-      saveShopCart(){
-          console.log(this.shopList.id)
-        //   this.$store.commit("addCart",{
-        //     id:this.shopList.id,
-        //     buyCount:this.shopList.buycoumt
-        // })
-      }
+      saveShopCart(id,newCount){
+        //   console.log(id,newCount)
+        //必须用commit配合全局mutations才能同步仓库数据
+          this.$store.commit("upDateShopCart",{
+            id,
+            newCount,
+        })
+      },
+      //删除购物车商品
+      delCart(id){
+         this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          });
+          
+          //同步数据,把仓库中的数据也删除
+         this.$store.commit("delShopCart",id)
+         //遍历数据,如果id相等则删除
+         this.shopList.forEach((v,index)=>{
+              if(v.id==id){
+                  this.shopList.splice(index,1);
+              }
+         })
+
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });          
+        });
+
+        
+      },
+      //判断是否登陆
+      isLogin(){
+          let ids={};
+            if(this.$store.state.isLogin==false){
+                  this.$router.push("/login");
+            }else{
+                   this.$router.push("/checkOrder/"+ids);
+            }
+      },
+      
   },
   computed:{
       countNum(){
