@@ -30,6 +30,10 @@ import iView from "iview";
 import 'iview/dist/styles/iview.css';
 Vue.use(iView);
 
+//支付二维码组件
+import VueQrcode from '@xkeshi/vue-qrcode';
+Vue.component(VueQrcode.name, VueQrcode);
+
 //把axios写进原型,方便其他方法调用
 import axios from "axios";
 //允许axios设置cookie
@@ -46,7 +50,15 @@ import detail from './components/detail.vue';
 import vip from './components/vip.vue';
 import shopCart from "./components/shopCart.vue";
 import checkOrder from "./components/checkOrder.vue";
-import login from "./components/login.vue"
+import login from "./components/login.vue";
+import Orderdetail from "./components/Orderdetail.vue";
+import paySuccess from "./components/paySuccess.vue";
+
+//导入嵌套路由
+import userInfo from "./components/userInfoChildren/userInfo.vue";
+import orderInfo from "./components/userInfoChildren/orderInfo.vue";
+import orderList from "./components/userInfoChildren/orderList.vue";
+
 
 
 Vue.config.productionTip = false;
@@ -57,45 +69,118 @@ const routes = [
   {
     path: '/',
     component: index,
-    meta: " 首页"
+    meta: {
+      zName: " 首页"
+    }
   },
   //首页
   {
     path: '/index',
     component: index,
-    meta: " 首页"
+    meta: {
+      zName: " 首页"
+    }
   },
   //会员页
   {
     path: "/vip",
     component: vip,
-    meta: "会员页"
+    meta: {
+      zName: "会员中心",
+      isLogin: true
+    },
+    //嵌套路由
+    children:[
+      {
+        path: "",
+        component: userInfo,
+        meta: {
+          zName: "会员中心",
+          isLogin: true
+        }
+      },
+      {
+        path: "/userInfo",
+        component: userInfo,
+        meta: {
+          zName: "会员中心",
+          isLogin: true
+        }
+      },
+      {
+        path: "/orderInfo",
+        component: orderInfo,
+        meta: {
+          zName: "订单信息",
+          isLogin: true
+        }
+      },
+      {
+        path: "/orderList",
+        component: orderList,
+        meta: {
+          zName: "订单列表",
+          isLogin: true
+        }
+      },
+    ]
+    
+
   },
   // 商品详情页
   {
     path: "/detail/:goodId",
     component: detail,
-    meta: " 商品"
+    meta: {
+      zName: " 商品"
+    }
   },
   //购物车
   {
     path: "/shopCart",
     component: shopCart,
-    meta: "购物车"
+    meta: {
+      zName: "购物车"
+    }
   },
   //填写商品信息
   {
-    path: "/checkOrder",
+    path: "/checkOrder/:ids",
     component: checkOrder,
-    meta: "填写品商信息"
+    meta: {
+      zName: "填写品商信息",
+      isLogin: true
+    }
   },
   //登录
   {
     path: "/login",
     component: login,
-    meta: "登录"
+    meta: {
+      zName: "登录"
+    }
 
-  }
+  },
+  //订单详情
+  {
+    path: "/Orderdetail/:orderid",
+    component: Orderdetail,
+    meta: {
+      zName: "订单详情",
+      isLogin: true
+    }
+
+  },
+  //支付成功
+  {
+    path: "/paySuccess",
+    component: paySuccess,
+    meta: {
+      zName: "支付成功",
+      isLogin: true
+    }
+
+  },
 ]
 
 // 实例化路由对象
@@ -105,11 +190,10 @@ const router = new VueRouter({
 
 //注册路由守卫
 router.beforeEach((to, from, next) => {
-  console.log(to)
-  window.document.title=to.meta
+  // console.log(to)
+  window.document.title = to.meta.zName
   //如果路径失去checkOrder页面的,则判断是否已经登录
-  if (to.path == "/checkOrder") {
-
+  if (to.meta.isLogin == true) {
     axios.get("site/account/islogin").then(rep => {
       if (rep.data.code == "logined") {
         //登录了,则执行用户操作

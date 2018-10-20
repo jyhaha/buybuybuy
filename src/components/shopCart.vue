@@ -197,7 +197,17 @@ export default {
       },
       //判断是否登陆
       isLogin(){
-          let ids={};
+            // console.log(this.shopList);
+            //判断是否是已经选中的商品,进行结账
+            let ids="";
+            this.shopList.forEach((v,index)=>{
+                if(v.selected==true){
+                   ids+=v.id+",";
+                }
+            })
+            //截取id
+            ids=ids.slice(0,-1);
+            // console.log(ids);
             if(this.$store.state.isLogin==false){
                   this.$router.push("/login");
             }else{
