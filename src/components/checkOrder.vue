@@ -290,11 +290,17 @@ export default {
     },
     //点击发送数据
     setPayInfo() {
-      // console.log(this.form);
+       let Ids = this.$route.params.ids.split(",");
       this.$axios.post("site/validate/order/setorder", this.form).then(rep => {
         //  console.log(rep);
         if (rep.data.status == 0) {
-          this.$router.push("/Orderdetail/" + rep.data.message.orderid);
+        //逐个删除仓库数据
+        Ids.forEach(v=>{
+           this.$store.commit("delShopCart",v)
+        })
+
+        this.$router.push("/Orderdetail/" + rep.data.message.orderid);
+
         } else {
           alert("服务器没响应");
         }

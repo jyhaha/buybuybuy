@@ -124,117 +124,114 @@ export default {
   name: "shopCart",
   data: function() {
     return {
-        shopList:[], //购物车列表
+      shopList: [] //购物车列表
     };
   },
-  methods:{
-      getShopCart(){
-          //保存id
-          let goodId="";
-          //遍历key,获取所有id
-          for(const key in this.$store.state.shopCart){
-               goodId+=key
-               goodId+=",";
-          }
-         //截取最后一个逗号
-         goodId=goodId.slice(0,-1);
-         //发送请求
-         this.$axios.get(`site/comment/getshopcargoods/${goodId}`).then(rep=>{
-            //    console.log(rep);
-            //遍历仓库数据,然后赋值
-               rep.data.message.forEach((v,index)=>{
-                     v.buycount=this.$store.state.shopCart[v.id]
-                    // console.log(this.$store.state.shopCart[v.id]);
-                     this.$set(v, "selected", true);
-                    // v.selected = true;
-
-
-               })
-            //存储购物车数据
-               this.shopList=rep.data.message;
-               
-            //    console.log(this.shopList);
-         })
-      },
-      //同步数据到仓库
-      saveShopCart(id,newCount){
-        //   console.log(id,newCount)
-        //必须用commit配合全局mutations才能同步仓库数据
-          this.$store.commit("upDateShopCart",{
-            id,
-            newCount,
-        })
-      },
-      //删除购物车商品
-      delCart(id){
-         this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          });
-          
-          //同步数据,把仓库中的数据也删除
-         this.$store.commit("delShopCart",id)
-         //遍历数据,如果id相等则删除
-         this.shopList.forEach((v,index)=>{
-              if(v.id==id){
-                  this.shopList.splice(index,1);
-              }
-         })
-
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });          
-        });
-
-        
-      },
-      //判断是否登陆
-      isLogin(){
-            // console.log(this.shopList);
-            //判断是否是已经选中的商品,进行结账
-            let ids="";
-            this.shopList.forEach((v,index)=>{
-                if(v.selected==true){
-                   ids+=v.id+",";
-                }
-            })
-            //截取id
-            ids=ids.slice(0,-1);
-            // console.log(ids);
-            if(this.$store.state.isLogin==false){
-                  this.$router.push("/login");
-            }else{
-                   this.$router.push("/checkOrder/"+ids);
-            }
-      },
-      
-  },
-  computed:{
-      countNum(){
-          let Num=0;
-          this.shopList.forEach((v)=>{
-              Num+=v.buycount
-          })
-          return Num;
-          
-      },
-      sellPeiceAll(){
-          let price=0;
-          this.shopList.forEach((v)=>{
-              price+=v.sell_price*v.buycount;
-          })
-          return price;
+  methods: {
+    getShopCart() {
+      //保存id
+      let goodId = "";
+      //遍历key,获取所有id
+      for (const key in this.$store.state.shopCart) {
+        goodId += key;
+        goodId += ",";
       }
+      //截取最后一个逗号
+      goodId = goodId.slice(0, -1);
+      //发送请求
+      this.$axios.get(`site/comment/getshopcargoods/${goodId}`).then(rep => {
+        //    console.log(rep);
+        //遍历仓库数据,然后赋值
+        rep.data.message.forEach((v, index) => {
+          v.buycount = this.$store.state.shopCart[v.id];
+          // console.log(this.$store.state.shopCart[v.id]);
+          this.$set(v, "selected", true);
+          // v.selected = true;
+        });
+        //存储购物车数据
+        this.shopList = rep.data.message;
+
+        //    console.log(this.shopList);
+      });
+    },
+    //同步数据到仓库
+    saveShopCart(id, newCount) {
+      //   console.log(id,newCount)
+      //必须用commit配合全局mutations才能同步仓库数据
+      this.$store.commit("upDateShopCart", {
+        id,
+        newCount
+      });
+    },
+    //删除购物车商品
+    delCart(id) {
+      this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.$message({
+            type: "success",
+            message: "删除成功!"
+          });
+
+          //同步数据,把仓库中的数据也删除
+          this.$store.commit("delShopCart", id);
+          //遍历数据,如果id相等则删除
+          this.shopList.forEach((v, index) => {
+            if (v.id == id) {
+              this.shopList.splice(index, 1);
+            }
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除"
+          });
+        });
+    },
+    //判断是否登陆
+    isLogin() {
+      // console.log(this.shopList);
+      //判断是否是已经选中的商品,进行结账
+      let ids = "";
+      this.shopList.forEach((v, index) => {
+        if (v.selected == true) {
+          ids += v.id + ",";
+        }
+      });
+      //截取id
+      ids = ids.slice(0, -1);
+      //把id截取为一个数组
+    //   let idArr=ids.split(",");
+      if (this.$store.state.isLogin == false) {
+        this.$router.push("/login");
+      } else {
+        this.$router.push("/checkOrder/" + ids);
+      }
+    },
+    
   },
-  created(){
-      this.getShopCart();
+  computed: {
+    countNum() {
+      let Num = 0;
+      this.shopList.forEach(v => {
+        Num += v.buycount;
+      });
+      return Num;
+    },
+    sellPeiceAll() {
+      let price = 0;
+      this.shopList.forEach(v => {
+        price += v.sell_price * v.buycount;
+      });
+      return price;
+    }
+  },
+  created() {
+    this.getShopCart();
   }
 };
 </script>
