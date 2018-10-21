@@ -67,7 +67,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="right-auto">
+                        <div class="right-auto" v-loading="isLoading">
                             <router-view></router-view>
                         </div>
                     </div>
@@ -80,7 +80,12 @@
 
 <script>
       export default{
-            name:"vip"
+            name:"vip",
+            data(){
+                return {
+                    isLoading:false, //是否需要加载数据
+                }
+            }
       }
 
 </script>

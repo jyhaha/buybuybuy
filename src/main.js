@@ -108,7 +108,7 @@ const routes = [
         }
       },
       {
-        path: "/orderInfo",
+        path: "/orderInfo/:orderid",
         component: orderInfo,
         meta: {
           zName: "订单信息",
@@ -218,6 +218,7 @@ const store = new Vuex.Store({
   state: {
     shopCart: JSON.parse(window.localStorage.getItem('cartData')) || {},
     isLogin: false,
+    
   },
   mutations: {
     //添加同步购物车数据

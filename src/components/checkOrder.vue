@@ -76,7 +76,7 @@
                                             <input name="payment_price" type="hidden" value="0.00">在线支付
                                             <em>手续费：0.00元</em>
                                         </label> -->
-                                        <el-radio-group v-model="form.payment_id">
+                                        <el-radio-group  v-model="form.payment_id">
                                             <el-radio :label="6" >在线支付</el-radio>
                                         </el-radio-group>
                                     </li>
@@ -258,7 +258,6 @@ export default {
       this.form.goodsids = this.$route.params.ids;
       //先把字符串分割成数据
       let Ids = this.$route.params.ids.split(",");
-      // console.log(this.goodsId)
       this.$axios
         .get(`site/validate/order/getgoodslist/${this.form.goodsids}`)
         .then(rep => {
@@ -277,16 +276,17 @@ export default {
               }
             }
           });
-
+        //  console.log(rep)
           //保存商品数据
           this.goodsInfo = rep.data.message;
+          this.totalPrice();
+        //   console.log(this.goodsInfo)
         });
     },
     //返回地区的值
     onSelected(data) {
       //遍历,把值保存
       this.form.area = data;
-      // console.log(this.form.area);
     },
     //点击发送数据
     setPayInfo() {
@@ -302,12 +302,12 @@ export default {
     },
     //总价格
     totalPrice() {
+        console.log(this.goodsInfo)
       let num = 0;
       this.goodsInfo.forEach(v => {
         num += v.buycount * v.sell_price;
       });
       this.form.goodsAmount = num;
-      
     }
   },
   computed: {
@@ -319,11 +319,13 @@ export default {
       });
       return num;
     }
+    
   },
   created() {
     //获取数据
     this.getGoodInfo();
-    // console.log(this.form)
-  }
+
+  },
+  
 };
 </script>
